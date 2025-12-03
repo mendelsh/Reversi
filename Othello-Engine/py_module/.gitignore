@@ -1,0 +1,3 @@
+build/
+othello/__pycache__/
+*.so
