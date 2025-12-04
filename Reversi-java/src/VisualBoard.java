@@ -28,7 +28,7 @@ public class VisualBoard implements ActionListener {
     public Board reversi = new Board();
     private JLabel scoreLabel;
     
-    public Bot_0 penguin = new Bot_0();
+    public Bot_01 penguin = new Bot_01();
     private boolean playerIsWhite = false; // Default player color is black
     
     public Color color = Color.decode("#21788a");
