@@ -110,17 +110,17 @@ Bot Greedy_create(Board* board, Side side);
 
 
 /////////////////////////////////////////////////
-
+/*
 int alpha_beta_func(bitboard player, bitboard opp, int depth, int alpha, int beta, int (*static_eval)(bitboard player, bitboard opp));
 
-static inline static_eval_py(bitboard player, bitboard opp,) {
+static inline static_eval_py(bitboard player, bitboard opp) {
     if (game_over(player, opp)) {
         return 1000 * (__builtin_popcountll(player) - __builtin_popcountll(opp));
     }
 
 
 }
-
-
+*/
+/////////////////////////////////////////////////
 
 #endif // BOT_H
