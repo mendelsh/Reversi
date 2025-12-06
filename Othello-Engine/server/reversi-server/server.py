@@ -18,7 +18,8 @@ async def best_move(req: Request):
     white_bb = int.from_bytes(raw_body[8:16], byteorder='little')
     side = bool(raw_body[16])
     depth = 6  # default depth
-
+"""
+Debugeging output
     print(' '.join(format(b, '08b') for b in raw_body[0:8]))
     print(' '.join(format(b, '08b') for b in raw_body[8:16]))
 
@@ -31,7 +32,7 @@ async def best_move(req: Request):
     bits_w = ' '.join(bits_w[i:i+8] for i in range(0, 64, 8))
     print(bits_w)
     print()
-
+"""
     board = Board(black_bitboard=black_bb, white_bitboard=white_bb, turn=side)
 
     # board.display()
