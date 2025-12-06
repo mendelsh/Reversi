@@ -12,6 +12,9 @@ sys.modules["othello.board"] = cboard
 spec.loader.exec_module(cboard)
 
 class Board:
+    BLACK_TURN = True
+    WHITE_TURN = False
+
     def __init__(self, black_bitboard=None, white_bitboard=None, turn=None):
         if black_bitboard is None:
             self._cap = cboard.create()

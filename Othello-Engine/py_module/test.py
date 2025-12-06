@@ -13,7 +13,7 @@ while not b.game_over():
 b.display()
 """
 
-def simulate_games(num_games, bot1_class, bot2_class, depth=4):
+def simulate_games(num_games, bot1, bot2, depth=4):
     pengwin_wins = 0
     greedy_wins = 0
     ties = 0
@@ -23,14 +23,13 @@ def simulate_games(num_games, bot1_class, bot2_class, depth=4):
     for i in range(num_games):
         b = Board()
         if i % 2 == 0:
-            black_bot = bot1_class(b, "BLACK")
-            white_bot = bot2_class(b, "WHITE")
+            black_bot = Bot.create(b, bot1, Board.BLACK_TURN)
+            white_bot = Bot.create(b, bot2, Board.WHITE_TURN)
         else:
-            black_bot = bot2_class(b, "BLACK")
-            white_bot = bot1_class(b, "WHITE")
-
+            black_bot = Bot.create(b, bot2, Board.BLACK_TURN)
+            white_bot = Bot.create(b, bot1, Board.WHITE_TURN)
         while not b.game_over():
-            bot = black_bot if b.turn == "BLACK" else white_bot
+            bot = black_bot if b.turn == Board.BLACK_TURN else white_bot
             move = bot.select_move(depth)
             b.play(move.x, move.y)
 
@@ -58,7 +57,7 @@ def simulate_games(num_games, bot1_class, bot2_class, depth=4):
         "white_wins": white_wins,
     }
 
-results = simulate_games(100, PengwinBot, GreedyBot)
+results = simulate_games(100, "pengwin", "greedy")
 print("Pengwin wins:", results["pengwin_wins"])
 print("Greedy wins:", results["greedy_wins"])
 print("Ties:", results["ties"])
