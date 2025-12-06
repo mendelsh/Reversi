@@ -2,6 +2,7 @@ package PengWin_Package;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,7 @@ public class Bot_01 {
 	private byte turn = 1; // 1 for black and 0 for white
 	
 	private byte[] payload = new byte[17];
-	private String urlstr = "http://10.0.0.10:8000/stuff";
+	private String urlstr = "http://10.0.0.10:8000/best_move";
 	private URL url;
     
     
@@ -34,11 +35,19 @@ public class Bot_01 {
     	Fetch fetch = fetchEngineMove(b);
     	
     	if(fetch.ok()) {
-    		this.parseJson(fetch.response.toString());
-    	} else
+    		String pj = new String(fetch.response, StandardCharsets.UTF_8);
+    		this.parseJson(pj);
+    	} else {
     		this.fetchBody = fetch;
+//    		System.out.println("bad :(");
+//    		
+//    		if(fetch.e == null) System.out.println("no IOException");
+//    		else fetch.e.printStackTrace();
+//    		System.out.println("Status code " + fetch.statusCode);
+//    		System.out.println(fetch.response.toString());
+    	}
     	
-    	return new int[] {lastMove.x, lastMove.y};
+    	return new int[] {7 - lastMove.y, 7 - lastMove.x};
     }
     
     private void setBitboardStruct(Board b) {
@@ -62,6 +71,18 @@ public class Bot_01 {
     	System.arraycopy(this.blackBuffer, 0, this.payload, 0, 8);
         System.arraycopy(this.whiteBuffer, 0, this.payload, 8, 8);
         this.payload[16] = this.turn;
+        
+        // debuge
+//        printBinary(payload);
+//        printBinary(blackBuffer);
+//        System.out.println();
+//        printBinary(whiteBuffer);
+    }
+    
+    private static void printBinary(byte[] arr) {
+        for (byte b : arr) {
+            System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
+        }
     }
     
     private Fetch fetchEngineMove(Board b) {
@@ -98,6 +119,7 @@ public class Bot_01 {
 			fetch.statusCode = statusCode;
 			return fetch;
 		}
+        fetch.statusCode = statusCode;
         
         try (InputStream is = con.getInputStream()) {
             byte[] resp = is.readAllBytes();
@@ -106,16 +128,21 @@ public class Bot_01 {
 			fetch.response = null;
 		}
         
+//        System.out.println(fetch.statusCode);
         return fetch;
     }
     
     private void parseJson(String json) {
-    	json = json.replace("{", "").replace("}", "").replace("\"", "");
+//    	System.out.println(json);
+    	json = json.replace("{", "").replace("}", "").replace("\"", "").replace("\\", "");
+//    	System.out.println(json);
     	String[] parts = json.split(",");
     	
     	for(String part : parts) {
     		String[] kv = part.split(":");
+//    		System.out.println(kv.length + " " + kv[0]);
     		String key = kv[0].trim();
+//    		System.out.println(key + " : " + kv[1].trim());
     		int value = Integer.parseInt(kv[1].trim());
     		
     		switch (key) {

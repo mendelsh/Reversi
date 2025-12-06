@@ -169,8 +169,8 @@ public class Board {
 	
 	
 	
-	public void makeMove(int row, int col) {
-		if(!isValid(row, col)) return;
+	public boolean makeMove(int row, int col) {
+		if(!isValid(row, col)) return false;
 		setBoard(row, col);
 		incCount(whoseTurn());
 		
@@ -299,6 +299,8 @@ public class Board {
 			noValid = 0;
 		if(countBlack == 0) countWhite = 64;
 		else if(countWhite == 0) countBlack = 64;
+		
+		return true;
 	}
 	
 	

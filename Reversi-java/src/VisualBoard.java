@@ -6,7 +6,6 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -15,7 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import game.Board;
 import PengWin_Package.*;
@@ -116,8 +115,13 @@ public class VisualBoard implements ActionListener {
         }
     }
     
+    
+    
     @Override
     public void actionPerformed(ActionEvent e) {
+    	char botColor = playerIsWhite ? 'b' : 'w';
+    	if(reversi.whoseTurn() == botColor) return;
+    	
         JButton clickedButton = (JButton) e.getSource();
         
         // Find button's position
@@ -134,27 +138,59 @@ public class VisualBoard implements ActionListener {
             if (row != -1) break;
         }
         
-        reversi.makeMove(row, col);
-        
+    	if(!reversi.makeMove(row, col)) return;
+    	
         updateVisualBoard();
         updateScoreLabel();
         
-        SwingUtilities.invokeLater(() -> {
-            int[] botMove;
-            if (playerIsWhite) {
-                botMove = penguin.botMove(reversi, 'b');
-                reversi.makeMove(botMove[0], botMove[1]);
-            } else {
-                botMove = penguin.botMove(reversi, 'w');
-                reversi.makeMove(botMove[0], botMove[1]);
-            }
-
-            updateVisualBoard();
-            updateScoreLabel();
-        });
+//        SwingUtilities.invokeLater(() -> {
+//            while(reversi.whoseTurn() == botColor && !reversi.isGameFinished()) {
+//            	int[] botMove = penguin.botMove(reversi, botColor);
+//            	reversi.makeMove(botMove[0], botMove[1]);
+//            	updateVisualBoard();
+//                updateScoreLabel();
+//                System.out.println("a");
+//                if(reversi.whoseTurn() == botColor) {
+//                	System.out.println("again!");
+//                }
+//            }
+//        });
         
+        startBotLoop(botColor);
     }
     
+    private void startBotLoop(char botColor) {
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+            	
+                // Bot decides the move
+                int[] move = penguin.botMove(reversi, botColor);
+
+                // Apply the move on the model (NOT on the UI thread)
+                synchronized (reversi) {
+                	reversi.makeMove(move[0], move[1]);
+				}
+
+                // Small delay so user sees the steps (optional)
+                Thread.sleep(300);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                updateVisualBoard();
+                updateScoreLabel();
+                if(reversi.whoseTurn() == botColor && !reversi.isGameFinished())
+                	startBotLoop(botColor);
+            }
+        };
+
+        worker.execute();
+    }
+    
+
     public void updateVisualBoard() {
 		for(int row = 0; row < 8; row++)
 			for(int col = 0; col < 8; col++) {
@@ -170,17 +206,11 @@ public class VisualBoard implements ActionListener {
     private void setPlayerColor(boolean isWhite) {
         this.playerIsWhite = isWhite;
         
-        int [] botMove;
-        if (playerIsWhite) {
-            botMove = penguin.botMove(reversi, 'b');
-            reversi.makeMove(botMove[0], botMove[1]);
-            updateVisualBoard();
-        }
-        else {
-            botMove = penguin.botMove(reversi, 'w');
-            reversi.makeMove(botMove[0], botMove[1]);
-            updateVisualBoard();
-        }
+        char botColor = isWhite ? 'b' : 'w';
+        
+        int [] botMove = penguin.botMove(reversi, botColor);
+        reversi.makeMove(botMove[0], botMove[1]);
+        updateVisualBoard();
         updateScoreLabel();
     }
 }
