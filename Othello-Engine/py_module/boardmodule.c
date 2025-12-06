@@ -4,6 +4,18 @@
 #include <time.h>
 
 
+void print_uint64_binary(uint64_t x) {
+    for (int i = 63; i >= 0; i--) {
+        putchar((x & (1ULL << i)) ? '1' : '0');
+
+        if (i % 8 == 0 && i != 0) {
+            putchar(' ');
+        }
+    }
+    putchar('\n');
+}
+
+
 /////////// Board Module ///////////
 
 static void board_destructor(PyObject *capsule) {
@@ -21,10 +33,17 @@ static PyObject* py_board_create(PyObject* self, PyObject* args) {
 }
 
 static PyObject* py_board_create_custom(PyObject* self, PyObject* args) {
-    int black_bb, white_bb, turn;
+    bitboard black_bb, white_bb;
+    int turn;
     if (!PyArg_ParseTuple(args, "KKi", &black_bb, &white_bb, &turn)) {
         return NULL;
     }
+    puts("===============================");
+    printf("c board create custom:\n");
+    print_uint64_binary((uint64_t)black_bb);
+    print_uint64_binary((uint64_t)white_bb);
+    puts("===============================");
+
     Board* b = malloc(sizeof(Board));
     if (!b) return PyErr_NoMemory();
 
@@ -156,6 +175,7 @@ static PyObject* py_bot_select_move(PyObject* self, PyObject* args) {
     if (!bot) return NULL;
 
     Move move = Bot_select_move(bot, depth);
+    // printf("{\"x\": %d, \"y\": %d, \"score\": %d}\n", move.x, move.y, move.score);
     return Py_BuildValue("(iii)", move.x, move.y, move.score);
 }
 
