@@ -33,33 +33,11 @@ async def best_move(req: Request):
     print()
 
     board = Board(black_bitboard=black_bb, white_bitboard=white_bb, turn=side)
-    # print("black")
-    # Board(black_bitboard=black_bb, white_bitboard=0, turn=side).display()
-    # print("white")
-    # Board(black_bitboard=0, white_bitboard=white_bb, turn=side).display()
-    # print("full")
-    board.display()
+
+    # board.display()
     bot = Bot.create(board, "pengwin", side)
     move = bot.select_move(depth)
 
     res = f'{{"x": {move.x}, "y": {move.y}, "score": {move.score}}}'
     print(res, flush=True)
     return res
-    # return {"x": move.x, "y": move.y, "score": move.score}
-
-
-# @app.get("/best_move/{bot_type}/{side}/{black_bitboard}/{white_bitboard}/{depth}")
-# async def best_move(bot_type: str, side: bool, black_bitboard: int, white_bitboard: int, depth: int):
-#     # Ensure turn (side) is bool — FastApp may give string ("true"/"false")
-#     side = bool(int(side)) if isinstance(side, str) else side
-
-#     # Create board
-#     board = Board(black_bitboard, white_bitboard, side)
-
-#     # Create bot
-#     bot = Bot.create(board, bot_type, side)
-
-#     # Select move
-#     move = bot.select_move(depth)
-
-#     return {"x": move.x, "y": move.y, "score": move.score}
