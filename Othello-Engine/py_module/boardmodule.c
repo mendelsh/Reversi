@@ -38,12 +38,14 @@ static PyObject* py_board_create_custom(PyObject* self, PyObject* args) {
     if (!PyArg_ParseTuple(args, "KKi", &black_bb, &white_bb, &turn)) {
         return NULL;
     }
+
+    /* Debugging output
     puts("===============================");
     printf("c board create custom:\n");
     print_uint64_binary((uint64_t)black_bb);
     print_uint64_binary((uint64_t)white_bb);
     puts("===============================");
-
+    */
     Board* b = malloc(sizeof(Board));
     if (!b) return PyErr_NoMemory();
 
