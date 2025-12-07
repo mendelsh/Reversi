@@ -318,7 +318,8 @@ public class Board {
 	}
 	
 	public boolean isGameFinished() {
-		return noValid > 1;
+//		return noValid > 1;
+		return howManyLegalMoves() == 0 && howManyMovesForOpponent() == 0;
 	}
 	
 							
